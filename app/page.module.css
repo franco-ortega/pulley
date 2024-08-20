@@ -7,6 +7,14 @@
 	min-height: 100vh;
 }
 
+.main li + li {
+	margin-top: 0.5rem;
+}
+
+.main span {
+	text-decoration: underline;
+}
+
 /* Enable hover only on non-touch devices */
 @media (hover: hover) and (pointer: fine) {
 }

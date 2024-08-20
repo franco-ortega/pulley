@@ -20,10 +20,18 @@ export default function Home() {
 		<main className={styles.main}>
 			{data ? (
 				<ul>
-					<li>Path: {data.encrypted_path}</li>
-					<li>Method: {data.encryption_method}</li>
-					<li>Expires: {data.expires_in}</li>
-					<li>Instructions: {data.instructions}</li>
+					<li>
+						<span>Path</span>: {data.encrypted_path}
+					</li>
+					<li>
+						<span>Method</span>: {data.encryption_method}
+					</li>
+					<li>
+						<span>Expires</span>: {data.expires_in}
+					</li>
+					<li>
+						<span>Instructions</span>: {data.instructions}
+					</li>
 				</ul>
 			) : (
 				'Loading....'
