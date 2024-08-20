@@ -1,21 +1,33 @@
 'use client';
 
-import { NextResponse } from 'next/server';
 import { useEffect, useState } from 'react';
 import styles from './page.module.css';
 
 export default function Home() {
-	const [data, setData] = useState();
+	const [data, setData] = useState(null);
 
 	useEffect(() => {
-		const STARTING_URL = '/api/proxy';
+		const URL = '/api/proxy';
 
-		fetch(STARTING_URL)
+		fetch(URL)
 			.then((res) => res.json())
-			.then((res) => setData(res));
+			.then((res) => setData(res.data));
 	}, []);
 
 	console.log(data);
 
-	return <main className={styles.main}>TEST</main>;
+	return (
+		<main className={styles.main}>
+			{data ? (
+				<ul>
+					<li>Path: {data.encrypted_path}</li>
+					<li>Method: {data.encryption_method}</li>
+					<li>Expires: {data.expires_in}</li>
+					<li>Instructions: {data.instructions}</li>
+				</ul>
+			) : (
+				'Loading....'
+			)}
+		</main>
+	);
 }
