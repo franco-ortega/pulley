@@ -9,7 +9,7 @@ const updateUrl = (data) => {
 	switch (encryptionMethod) {
 		case 'nothing':
 			return data.encrypted_path;
-			break;
+
 		case 'encoded as base64':
 			const chunk = path.slice(5);
 			console.log({ chunk });
@@ -17,7 +17,7 @@ const updateUrl = (data) => {
 			console.log({ decodedChunk });
 			const newPath = `task_${decodedChunk}`;
 			return newPath;
-			break;
+
 		default:
 			console.log('dead end');
 	}
