@@ -40,6 +40,9 @@ export default function Home() {
 					<li>
 						<span>Instructions</span>: {display.instructions}
 					</li>
+					<li>
+						<span>Level</span>: {display.level}
+					</li>
 				</ul>
 			) : (
 				'Click button to fetch data.'

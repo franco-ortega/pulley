@@ -4,16 +4,23 @@ const BASE_URL = 'https://ciphersprint.pulley.com';
 const EMAIL = 'francoortegadev@gmail.com';
 
 const updateUrl = (data) => {
-	if (data.encryption_method === 'encoded as base64') {
-		const chunk = path.slice(5);
-		console.log({ chunk });
-		const decodedChunk = btoa(chunk);
-		console.log({ decodedChunk });
-		const newPath = `task_${decodedChunk}`;
-		return newPath;
-	}
+	const encryptionMethod = data.encryption_method;
 
-	return data.encrypted_path;
+	switch (encryptionMethod) {
+		case 'nothing':
+			return data.encrypted_path;
+			break;
+		case 'encoded as base64':
+			const chunk = path.slice(5);
+			console.log({ chunk });
+			const decodedChunk = btoa(chunk);
+			console.log({ decodedChunk });
+			const newPath = `task_${decodedChunk}`;
+			return newPath;
+			break;
+		default:
+			console.log('new encryption method');
+	}
 };
 
 export async function GET() {
