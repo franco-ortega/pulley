@@ -19,7 +19,7 @@ const updateUrl = (data) => {
 			return newPath;
 			break;
 		default:
-			console.log('new encryption method');
+			console.log('dead end');
 	}
 };
 
