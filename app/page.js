@@ -5,36 +5,44 @@ import styles from './page.module.css';
 
 export default function Home() {
 	const [data, setData] = useState(null);
+	const [display, setDisplay] = useState(null);
 
-	useEffect(() => {
+	const fetchData = () => {
 		const URL = '/api/proxy';
 
 		fetch(URL)
 			.then((res) => res.json())
 			.then((res) => setData(res.data));
-	}, []);
+	};
+
+	useEffect(() => {
+		setDisplay(data);
+	}, [data]);
 
 	console.log(data);
 
 	return (
 		<main className={styles.main}>
-			{data ? (
+			<div>
+				<button onClick={fetchData}>Fetch Data</button>
+			</div>
+			{display ? (
 				<ul>
 					<li>
-						<span>Path</span>: {data.encrypted_path}
+						<span>Path</span>: {display.encrypted_path}
 					</li>
 					<li>
-						<span>Method</span>: {data.encryption_method}
+						<span>Method</span>: {display.encryption_method}
 					</li>
 					<li>
-						<span>Expires</span>: {data.expires_in}
+						<span>Expires</span>: {display.expires_in}
 					</li>
 					<li>
-						<span>Instructions</span>: {data.instructions}
+						<span>Instructions</span>: {display.instructions}
 					</li>
 				</ul>
 			) : (
-				'Loading....'
+				'Click button to fetch data.'
 			)}
 		</main>
 	);

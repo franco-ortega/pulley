@@ -7,7 +7,19 @@
 	min-height: 100vh;
 }
 
-.main li + li {
+.main div {
+	background-color: lightgray;
+	margin-inline: -2rem;
+	padding: 1rem;
+	text-align: center;
+}
+
+.main button {
+	border-radius: 8px;
+	padding: 0.25rem 0.5rem;
+}
+
+.main li {
 	margin-top: 0.5rem;
 }
 
