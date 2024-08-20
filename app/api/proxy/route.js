@@ -1,67 +1,74 @@
 export const dynamic = 'force-static';
 
-const BASE_URL = 'https://ciphersprint.pulley.com';
-const EMAIL = 'francoortegadev@gmail.com';
-
-const updateUrlSegment = (data) => {
-	const encryptionMethod = data.encryption_method;
-	const encryptedPath = data.encrypted_path;
-
-	switch (encryptionMethod) {
-		case 'nothing':
-			console.log({ encryptedPath });
-			return encryptedPath;
-
-		case 'encoded as base64':
-			const urlSegment = encryptedPath.slice(5);
-			const decodedUrlSegment = atob(urlSegment);
-			const newUrlSegment = `task_${decodedUrlSegment}`;
-
-			console.log({ urlSegment });
-			console.log({ decodedUrlSegment });
-			console.log({ newUrlSegment });
-			return newUrlSegment;
-
-		default:
-			console.log('dead end');
-	}
-};
-
 export async function GET() {
-	const res = await fetch(`${BASE_URL}/${EMAIL}`, {
-		headers: {
-			'Content-Type': 'application/json',
-			'API-Key': process.env.DATA_API_KEY,
-		},
-	});
+	const BASE_URL = 'https://ciphersprint.pulley.com';
+	const EMAIL = 'francoortegadev@gmail.com';
 
-	const firstData = await res.json();
+	const updateUrlSegment = (data) => {
+		const encryptionMethod = data.encryption_method;
+		const encryptedPath = data.encrypted_path;
 
-	const NEXT_PATH = updateUrlSegment(firstData);
-	console.log({ firstData });
+		switch (encryptionMethod) {
+			case 'nothing':
+				return encryptedPath;
 
-	const newRes = await fetch(`${BASE_URL}/${NEXT_PATH}`, {
-		headers: {
-			'Content-Type': 'application/json',
-			'API-Key': process.env.DATA_API_KEY,
-		},
-	});
+			case 'encoded as base64':
+				const encrytpedUrlSegment = encryptedPath.slice(5);
+				const decrytpedUrlSegment = atob(encrytpedUrlSegment);
+				const newUrlSegment = `task_${decrytpedUrlSegment}`;
+				return newUrlSegment;
 
-	const secondData = await newRes.json();
+			default:
+				return 'DEAD_END';
+		}
+	};
 
-	const ANOTHER_PATH = updateUrlSegment(secondData);
-	console.log({ secondData });
+	const goDownTheRabbitHole = async (urlSegment, data, count = 0) => {
+		console.log(`Going down ${count} times`);
+		console.log(urlSegment === 'DEAD_END');
+		console.log({ data });
+		// console.log({ urlSegment });
+		if (urlSegment === 'DEAD_END') return data;
 
-	const thirdRes = await fetch(`${BASE_URL}/${ANOTHER_PATH}`, {
-		headers: {
-			'Content-Type': 'application/json',
-			'API-Key': process.env.DATA_API_KEY,
-		},
-	});
+		count++;
+		// console.log({ urlSegment });
+		// console.log({ data });
 
-	const data = await thirdRes.json();
+		const url = `${BASE_URL}/${urlSegment}`;
+		// console.log({ url });
 
-	console.log({ data });
+		const res = await fetch(url);
+
+		const gold = await res.json();
+		const newChunk = updateUrlSegment(gold);
+		// return Response.json({ data });
+		// console.log({ newChunk });
+
+		// const test = Response.json({ data });
+		// console.log({ test });
+
+		return await goDownTheRabbitHole(newChunk, gold, count);
+	};
+
+	////////////
+
+	const data = await goDownTheRabbitHole(EMAIL, {}, 0);
+
+	// const res = await fetch(`${BASE_URL}/${EMAIL}`);
+
+	// const firstData = await res.json();
+
+	// const NEXT_PATH = updateUrlSegment(firstData);
+
+	// const newRes = await fetch(`${BASE_URL}/${NEXT_PATH}`);
+
+	// const secondData = await newRes.json();
+
+	// const ANOTHER_PATH = updateUrlSegment(secondData);
+
+	// const thirdRes = await fetch(`${BASE_URL}/${ANOTHER_PATH}`);
+
+	// const data = await thirdRes.json();
 
 	return Response.json({ data });
 }
