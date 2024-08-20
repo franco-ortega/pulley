@@ -3,20 +3,24 @@ export const dynamic = 'force-static';
 const BASE_URL = 'https://ciphersprint.pulley.com';
 const EMAIL = 'francoortegadev@gmail.com';
 
-const updateUrl = (data) => {
+const updateUrlSegment = (data) => {
 	const encryptionMethod = data.encryption_method;
+	const encryptedPath = data.encrypted_path;
 
 	switch (encryptionMethod) {
 		case 'nothing':
-			return data.encrypted_path;
+			console.log({ encryptedPath });
+			return encryptedPath;
 
 		case 'encoded as base64':
-			const chunk = path.slice(5);
-			console.log({ chunk });
-			const decodedChunk = btoa(chunk);
-			console.log({ decodedChunk });
-			const newPath = `task_${decodedChunk}`;
-			return newPath;
+			const urlSegment = encryptedPath.slice(5);
+			const decodedUrlSegment = atob(urlSegment);
+			const newUrlSegment = `task_${decodedUrlSegment}`;
+
+			console.log({ urlSegment });
+			console.log({ decodedUrlSegment });
+			console.log({ newUrlSegment });
+			return newUrlSegment;
 
 		default:
 			console.log('dead end');
@@ -33,9 +37,8 @@ export async function GET() {
 
 	const firstData = await res.json();
 
-	const NEXT_PATH = updateUrl(firstData);
-
-	console.log({ NEXT_PATH });
+	const NEXT_PATH = updateUrlSegment(firstData);
+	console.log({ firstData });
 
 	const newRes = await fetch(`${BASE_URL}/${NEXT_PATH}`, {
 		headers: {
@@ -44,7 +47,19 @@ export async function GET() {
 		},
 	});
 
-	const data = await newRes.json();
+	const secondData = await newRes.json();
+
+	const ANOTHER_PATH = updateUrlSegment(secondData);
+	console.log({ secondData });
+
+	const thirdRes = await fetch(`${BASE_URL}/${ANOTHER_PATH}`, {
+		headers: {
+			'Content-Type': 'application/json',
+			'API-Key': process.env.DATA_API_KEY,
+		},
+	});
+
+	const data = await thirdRes.json();
 
 	console.log({ data });
 
