@@ -1,18 +1,12 @@
+import findKey from '@/utils/findKey';
+import logCount from '@/utils/logCount';
+
 export const dynamic = 'force-static';
 
 const BASE_URL = 'https://ciphersprint.pulley.com';
 const EMAIL = 'francoortegadev@gmail.com';
 
 const collectedData = [];
-
-const logCount = (level) => {
-	console.log(`Going down ${level + 1} times`);
-};
-
-const findKey = (keyHolder) => {
-	const keyLocation = keyHolder.split('').findIndex((char) => char === ':');
-	return keyHolder.slice(keyLocation + 2);
-};
 
 const swapCharacters = (chars) => {
 	const charsList = chars.split('');
@@ -70,9 +64,6 @@ const decodeHex = (encodedString, keyHolder) => {
 const decodeMessagePack = (encryptedString, keyHolder) => {
 	const base64String = findKey(keyHolder);
 
-	console.log({ base64String });
-
-	// Step 1: Base64 decode
 	function base64ToUint8Array(base64) {
 		const binaryString = atob(base64);
 		const len = binaryString.length;
@@ -87,10 +78,7 @@ const decodeMessagePack = (encryptedString, keyHolder) => {
 
 	const binaryData = base64ToUint8Array(base64String);
 
-	// Step 2: MessagePack decode (simple implementation)
 	function decodeMessagePack(data) {
-		// Simple MessagePack decoding logic assuming the data is small and simple
-		// This example assumes the data is a sequence of integers (positions) in MessagePack format
 		const positions = [];
 		let i = 0;
 
@@ -105,7 +93,6 @@ const decodeMessagePack = (encryptedString, keyHolder) => {
 				positions.push(value);
 				i += 2;
 			}
-			// Handle other cases if needed
 		}
 
 		return positions;
@@ -113,7 +100,6 @@ const decodeMessagePack = (encryptedString, keyHolder) => {
 
 	const positions = decodeMessagePack(binaryData);
 
-	// Step 3: Reorder the characters
 	function reorderString(str, positions) {
 		const arr = Array.from(str);
 		const reordered = Array(arr.length);
@@ -127,8 +113,6 @@ const decodeMessagePack = (encryptedString, keyHolder) => {
 
 	const answer = reorderString(encryptedString, positions);
 
-	console.log({ answer });
-
 	return answer;
 };
 
@@ -140,30 +124,22 @@ const updateUrlSegment = (encryptionMethod, encryptedUrlSegment) => {
 			return encryptedUrlSegment;
 
 		case 'encoded as base64':
-			const decryptedUrlSegment = atob(clippedUrlSegment);
-			return `task_${decryptedUrlSegment}`;
+			return `task_${atob(clippedUrlSegment)}`;
 
 		case 'swapped every pair of characters':
-			const swappedUrlSegment = swapCharacters(clippedUrlSegment);
-			return `task_${swappedUrlSegment}`;
+			return `task_${swapCharacters(clippedUrlSegment)}`;
 
 		case 'hex decoded, encrypted with XOR, hex encoded again. key: secret':
-			const decodedUrlSegment = decodeHex(clippedUrlSegment, encryptionMethod);
-			return `task_${decodedUrlSegment}`;
+			return `task_${decodeHex(clippedUrlSegment, encryptionMethod)}`;
 
 		default:
 			if (encryptionMethod.includes('ASCII value')) {
 				const number = Number(encryptionMethod.slice(5, 8));
-				const acsiiUrlSegment = addToAcsii(clippedUrlSegment, number);
-				return `task_${acsiiUrlSegment}`;
+				return `task_${addToAcsii(clippedUrlSegment, number)}`;
 			}
 
 			if (encryptionMethod.includes('scrambled!')) {
-				const messagePackSegment = decodeMessagePack(
-					clippedUrlSegment,
-					encryptionMethod
-				);
-				return `task_${messagePackSegment}`;
+				return `task_${decodeMessagePack(clippedUrlSegment, encryptionMethod)}`;
 			}
 
 			return 'DEAD_END';
@@ -186,8 +162,6 @@ const goDownTheRabbitHole = async (urlSegment) => {
 		res.encrypted_path
 	);
 
-	console.log({ updatedUrlSegment });
-
 	if (updatedUrlSegment === 'DEAD_END') return res;
 
 	return await goDownTheRabbitHole(updatedUrlSegment);
@@ -201,8 +175,6 @@ export async function GET() {
 		return Response.json({ data });
 	} catch (error) {
 		console.error('Error fetching data:', error);
-
-		// If there was any partial data collected, respond with that
 
 		return new Response(
 			JSON.stringify({
