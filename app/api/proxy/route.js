@@ -19,19 +19,18 @@ const swapCharacters = (chars) => {
 	}
 
 	return swappedChars;
-
-	// return charsList.join('');
 };
 
 const addToAcsii = (chars, num) => {
-	const charsList = chars
-		.split('')
-		.map((char) => {
-			return char.charCodeAt(0) - num;
-		})
-		.map((char) => String.fromCharCode(char));
+	let decodedAcsii = '';
 
-	return charsList.join('');
+	for (let i = 0; i <= chars.length - 1; i++) {
+		const originalAsciiValue = chars[i].charCodeAt(0) - num;
+
+		decodedAcsii = decodedAcsii + String.fromCharCode(originalAsciiValue);
+	}
+
+	return decodedAcsii;
 };
 
 const decodeHex = (encodedString, keyHolder) => {
