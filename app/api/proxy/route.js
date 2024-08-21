@@ -3,19 +3,18 @@ export const dynamic = 'force-static';
 const BASE_URL = 'https://ciphersprint.pulley.com';
 const EMAIL = 'francoortegadev@gmail.com';
 
-const updateUrlSegment = (data) => {
-	const encryptionMethod = data.encryption_method;
-	const encryptedPath = data.encrypted_path;
+const logCount = (level) => {
+	console.log(`Going down ${level + 1} times`);
+};
 
+const updateUrlSegment = (encryptionMethod, encryptedUrlSegment) => {
 	switch (encryptionMethod) {
 		case 'nothing':
-			return encryptedPath;
+			return encryptedUrlSegment;
 
 		case 'encoded as base64':
-			const encrytpedUrlSegment = encryptedPath.slice(5);
-			const decrytpedUrlSegment = atob(encrytpedUrlSegment);
-			const newUrlSegment = `task_${decrytpedUrlSegment}`;
-			return newUrlSegment;
+			const decryptedUrlSegment = atob(encryptedUrlSegment.slice(5));
+			return `task_${decryptedUrlSegment}`;
 
 		default:
 			return 'DEAD_END';
@@ -23,13 +22,16 @@ const updateUrlSegment = (data) => {
 };
 
 const goDownTheRabbitHole = async (urlSegment) => {
-	const url = `${BASE_URL}/${urlSegment}`;
+	const res = await fetch(`${BASE_URL}/${urlSegment}`).then((res) =>
+		res.json()
+	);
 
-	const res = await fetch(url).then((res) => res.json());
+	logCount(res.level);
 
-	console.log(`Going down ${res.level + 1} times`);
-
-	const updatedUrlSegment = updateUrlSegment(res);
+	const updatedUrlSegment = updateUrlSegment(
+		res.encryption_method,
+		res.encrypted_path
+	);
 
 	if (updatedUrlSegment === 'DEAD_END') return res;
 
