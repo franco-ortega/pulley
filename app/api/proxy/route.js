@@ -9,16 +9,18 @@ const EMAIL = 'francoortegadev@gmail.com';
 const collectedData = [];
 
 const swapCharacters = (chars) => {
-	const charsList = chars.split('');
+	let swappedChars = '';
 
-	for (let i = 0; i <= charsList.length - 1; i += 2) {
-		const currentChar = charsList[i];
-		const nextChar = charsList[i + 1];
-		charsList[i] = nextChar;
-		charsList[i + 1] = currentChar;
+	for (let i = 0; i <= chars.length - 2; i += 2) {
+		const currentChar = chars[i];
+		const nextChar = chars[i + 1];
+
+		swappedChars = swappedChars + nextChar + currentChar;
 	}
 
-	return charsList.join('');
+	return swappedChars;
+
+	// return charsList.join('');
 };
 
 const addToAcsii = (chars, num) => {
