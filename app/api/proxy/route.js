@@ -7,6 +7,11 @@ const logCount = (level) => {
 	console.log(`Going down ${level + 1} times`);
 };
 
+const findKey = (keyHolder) => {
+	const keyLocation = keyHolder.split('').findIndex((char) => char === ':');
+	return keyHolder.slice(keyLocation + 2);
+};
+
 const swapCharacters = (chars) => {
 	const charsList = chars.split('');
 
@@ -32,8 +37,7 @@ const addToAcsii = (chars, num) => {
 };
 
 const decodeHex = (encodedString, keyHolder) => {
-	const keyLocation = keyHolder.split('').findIndex((char) => char === ':');
-	const key = keyHolder.slice(keyLocation + 2);
+	const key = findKey(keyHolder);
 
 	function hexToBytes(hex) {
 		let bytes = [];
@@ -87,6 +91,14 @@ const updateUrlSegment = (encryptionMethod, encryptedUrlSegment) => {
 				return `task_${acsiiUrlSegment}`;
 			}
 
+			if (encryptionMethod.includes('scrambled!')) {
+				const messagePackSegment = decodeMessagePack(
+					clippedUrlSegment,
+					encryptionMethod
+				);
+				return `task_${messagePackSegment}`;
+			}
+
 			return 'DEAD_END';
 	}
 };
@@ -98,10 +110,14 @@ const goDownTheRabbitHole = async (urlSegment) => {
 
 	logCount(res.level);
 
+	console.log({ res });
+
 	const updatedUrlSegment = updateUrlSegment(
 		res.encryption_method,
 		res.encrypted_path
 	);
+
+	console.log({ updatedUrlSegment });
 
 	if (updatedUrlSegment === 'DEAD_END') return res;
 
