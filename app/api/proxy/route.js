@@ -22,24 +22,22 @@ const updateUrlSegment = (data) => {
 	}
 };
 
-const goDownTheRabbitHole = async (urlSegment, data, count = 0) => {
-	console.log(`Going down ${count} times`);
-
+const goDownTheRabbitHole = async (urlSegment, data) => {
 	if (urlSegment === 'DEAD_END') return data;
-
-	count++;
 
 	const url = `${BASE_URL}/${urlSegment}`;
 
-	const res = await fetch(url);
+	const res = await fetch(url).then((res) => res.json());
 
-	const gold = await res.json();
-	const newChunk = updateUrlSegment(gold);
-	return await goDownTheRabbitHole(newChunk, gold, count);
+	console.log(`Going down ${res.level + 1} times`);
+
+	const updatedUrlSegment = updateUrlSegment(res);
+
+	return await goDownTheRabbitHole(updatedUrlSegment, res);
 };
 
 export async function GET() {
-	const data = await goDownTheRabbitHole(EMAIL, {}, 0);
+	const data = await goDownTheRabbitHole(EMAIL);
 
 	return Response.json({ data });
 }
