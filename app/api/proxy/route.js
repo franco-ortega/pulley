@@ -22,9 +22,7 @@ const updateUrlSegment = (data) => {
 	}
 };
 
-const goDownTheRabbitHole = async (urlSegment, data) => {
-	if (urlSegment === 'DEAD_END') return data;
-
+const goDownTheRabbitHole = async (urlSegment) => {
 	const url = `${BASE_URL}/${urlSegment}`;
 
 	const res = await fetch(url).then((res) => res.json());
@@ -33,7 +31,9 @@ const goDownTheRabbitHole = async (urlSegment, data) => {
 
 	const updatedUrlSegment = updateUrlSegment(res);
 
-	return await goDownTheRabbitHole(updatedUrlSegment, res);
+	if (updatedUrlSegment === 'DEAD_END') return res;
+
+	return await goDownTheRabbitHole(updatedUrlSegment);
 };
 
 export async function GET() {
