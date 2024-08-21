@@ -194,6 +194,8 @@ const goDownTheRabbitHole = async (urlSegment) => {
 };
 
 export async function GET() {
+	collectedData.length = 0;
+
 	try {
 		const data = await goDownTheRabbitHole(EMAIL);
 		return Response.json({ data });
