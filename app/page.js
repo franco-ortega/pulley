@@ -42,21 +42,25 @@ export default function Home() {
 			</div>
 			{display ? (
 				<ul>
-					<li>
-						<span>Path</span>: {display.encrypted_path}
-					</li>
-					<li>
-						<span>Method</span>: {display.encryption_method}
-					</li>
-					<li>
-						<span>Expires</span>: {display.expires_in}
-					</li>
-					<li>
-						<span>Instructions</span>: {display.instructions}
-					</li>
-					<li>
-						<span>Level</span>: {display.level}
-					</li>
+					{display.map((entry) => (
+						<ol key={entry.level}>
+							<li>
+								<span>Path</span>: {entry.encrypted_path}
+							</li>
+							<li>
+								<span>Method</span>: {entry.encryption_method}
+							</li>
+							<li>
+								<span>Expires</span>: {entry.expires_in}
+							</li>
+							<li>
+								<span>Instructions</span>: {entry.instructions}
+							</li>
+							<li>
+								<span>Level</span>: {entry.level}
+							</li>
+						</ol>
+					))}
 				</ul>
 			) : (
 				'Click button to fetch data.'

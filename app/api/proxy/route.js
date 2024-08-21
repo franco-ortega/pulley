@@ -179,7 +179,7 @@ const goDownTheRabbitHole = async (urlSegment) => {
 
 	console.log({ res });
 
-	collectedData.push(res);
+	collectedData.unshift(res);
 
 	const updatedUrlSegment = updateUrlSegment(
 		res.encryption_method,
@@ -194,21 +194,11 @@ const goDownTheRabbitHole = async (urlSegment) => {
 };
 
 export async function GET() {
-	// const data = await goDownTheRabbitHole(EMAIL);
-	// return Response.json({ data });
-
 	try {
 		const data = await goDownTheRabbitHole(EMAIL);
 		return Response.json({ data });
 	} catch (error) {
-		// console.error('Error fetching data:', error);
-		// console.log(collectedData);
-		// return new Response(JSON.stringify({ error: 'Failed to fetch data' }), {
-		// 	status: 500,
-		// 	headers: { 'Content-Type': 'application/json' },
-		// });
 		console.error('Error fetching data:', error);
-		console.log(collectedData);
 
 		// If there was any partial data collected, respond with that
 
