@@ -6,13 +6,27 @@ import styles from './page.module.css';
 export default function Home() {
 	const [data, setData] = useState(null);
 	const [display, setDisplay] = useState(null);
+	const [error, setError] = useState(null);
 
-	const fetchData = () => {
+	const fetchData = async () => {
 		const URL = '/api/proxy';
 
-		fetch(URL)
-			.then((res) => res.json())
-			.then((res) => setData(res.data));
+		try {
+			const res = await fetch(URL);
+			const result = await res.json();
+
+			if (res.ok) {
+				setData(result.data);
+				setError(null);
+			} else {
+				setData(result.partialData);
+				setError(result.error);
+			}
+		} catch (err) {
+			console.error('Network error:', err);
+			setError('Network error occurred');
+			setData(null); // Clear data on network error
+		}
 	};
 
 	useEffect(() => {
@@ -26,26 +40,31 @@ export default function Home() {
 			<div>
 				<button onClick={fetchData}>Fetch Data</button>
 			</div>
+			{error && <div>(Error: {error})</div>}
 			{display ? (
 				<ul>
-					<li>
-						<span>Path</span>: {display.encrypted_path}
-					</li>
-					<li>
-						<span>Method</span>: {display.encryption_method}
-					</li>
-					<li>
-						<span>Expires</span>: {display.expires_in}
-					</li>
-					<li>
-						<span>Instructions</span>: {display.instructions}
-					</li>
-					<li>
-						<span>Level</span>: {display.level}
-					</li>
+					{display.map((entry) => (
+						<ol key={entry.level}>
+							<li>
+								<span>Path</span>: {entry.encrypted_path}
+							</li>
+							<li>
+								<span>Method</span>: {entry.encryption_method}
+							</li>
+							<li>
+								<span>Expires</span>: {entry.expires_in}
+							</li>
+							<li>
+								<span>Instructions</span>: {entry.instructions}
+							</li>
+							<li>
+								<span>Level</span>: {entry.level}
+							</li>
+						</ol>
+					))}
 				</ul>
 			) : (
-				'Click button to fetch data.'
+				<div>Click button to fetch data.</div>
 			)}
 		</main>
 	);
