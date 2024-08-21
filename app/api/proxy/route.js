@@ -38,8 +38,8 @@ const decodeHex = (encodedString, keyHolder) => {
 
 	function hexToBytes(hex) {
 		let bytes = [];
-		for (let c = 0; c < hex.length; c += 2) {
-			bytes.push(parseInt(hex.substr(c, 2), 16));
+		for (let i = 0; i < hex.length; i += 2) {
+			bytes.push(parseInt(hex.substr(i, 2), 16));
 		}
 
 		return bytes;
