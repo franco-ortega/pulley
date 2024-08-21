@@ -40,6 +40,7 @@ export default function Home() {
 			<div>
 				<button onClick={fetchData}>Fetch Data</button>
 			</div>
+			{error && <div>(Error: {error})</div>}
 			{display ? (
 				<ul>
 					{display.map((entry) => (
@@ -63,7 +64,7 @@ export default function Home() {
 					))}
 				</ul>
 			) : (
-				'Click button to fetch data.'
+				<div>Click button to fetch data.</div>
 			)}
 		</main>
 	);

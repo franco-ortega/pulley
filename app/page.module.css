@@ -1,17 +1,16 @@
 .main {
-	/* display: flex; */
-	/* flex-direction: column; */
-	/* justify-content: space-between; */
-	/* align-items: center; */
 	padding: 2rem;
 	min-height: 100vh;
 }
 
 .main div {
-	background-color: lightgray;
-	margin-inline: -2rem;
 	padding: 1rem;
 	text-align: center;
+}
+
+.main div:first-of-type {
+	background-color: lightgray;
+	margin-inline: -2rem;
 }
 
 .main button {
