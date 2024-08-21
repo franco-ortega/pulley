@@ -208,8 +208,10 @@ export async function GET() {
 		// 	headers: { 'Content-Type': 'application/json' },
 		// });
 		console.error('Error fetching data:', error);
+		console.log(collectedData);
 
 		// If there was any partial data collected, respond with that
+
 		return new Response(
 			JSON.stringify({
 				error: 'Failed to fetch all data',

@@ -6,13 +6,27 @@ import styles from './page.module.css';
 export default function Home() {
 	const [data, setData] = useState(null);
 	const [display, setDisplay] = useState(null);
+	const [error, setError] = useState(null);
 
-	const fetchData = () => {
+	const fetchData = async () => {
 		const URL = '/api/proxy';
 
-		fetch(URL)
-			.then((res) => res.json())
-			.then((res) => setData(res.data));
+		try {
+			const res = await fetch(URL);
+			const result = await res.json();
+
+			if (res.ok) {
+				setData(result.data);
+				setError(null);
+			} else {
+				setData(result.partialData);
+				setError(result.error);
+			}
+		} catch (err) {
+			console.error('Network error:', err);
+			setError('Network error occurred');
+			setData(null); // Clear data on network error
+		}
 	};
 
 	useEffect(() => {
