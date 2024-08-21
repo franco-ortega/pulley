@@ -13,10 +13,20 @@ const swapCharacters = (chars) => {
 	for (let i = 0; i <= charsList.length - 1; i += 2) {
 		const currentChar = charsList[i];
 		const nextChar = charsList[i + 1];
-		console.log(i, currentChar, nextChar);
 		charsList[i] = nextChar;
 		charsList[i + 1] = currentChar;
 	}
+
+	return charsList.join('');
+};
+
+const addToAcsii = (chars, num) => {
+	const charsList = chars
+		.split('')
+		.map((char) => {
+			return char.charCodeAt(0) - num;
+		})
+		.map((char) => String.fromCharCode(char));
 
 	return charsList.join('');
 };
@@ -37,6 +47,12 @@ const updateUrlSegment = (encryptionMethod, encryptedUrlSegment) => {
 			return `task_${swappedUrlSegment}`;
 
 		default:
+			if (encryptionMethod.includes('ASCII value')) {
+				const number = Number(encryptionMethod.slice(5, 8));
+				const acsiiUrlSegment = addToAcsii(clippedUrlSegment, number);
+				return `task_${acsiiUrlSegment}`;
+			}
+
 			return 'DEAD_END';
 	}
 };
@@ -54,6 +70,8 @@ const goDownTheRabbitHole = async (urlSegment) => {
 		res.encryption_method,
 		res.encrypted_path
 	);
+
+	console.log({ updatedUrlSegment });
 
 	if (updatedUrlSegment === 'DEAD_END') return res;
 
