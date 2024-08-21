@@ -7,14 +7,34 @@ const logCount = (level) => {
 	console.log(`Going down ${level + 1} times`);
 };
 
+const swapCharacters = (chars) => {
+	const charsList = chars.split('');
+
+	for (let i = 0; i <= charsList.length - 1; i += 2) {
+		const currentChar = charsList[i];
+		const nextChar = charsList[i + 1];
+		console.log(i, currentChar, nextChar);
+		charsList[i] = nextChar;
+		charsList[i + 1] = currentChar;
+	}
+
+	return charsList.join('');
+};
+
 const updateUrlSegment = (encryptionMethod, encryptedUrlSegment) => {
+	const clippedUrlSegment = encryptedUrlSegment.slice(5);
+
 	switch (encryptionMethod) {
 		case 'nothing':
 			return encryptedUrlSegment;
 
 		case 'encoded as base64':
-			const decryptedUrlSegment = atob(encryptedUrlSegment.slice(5));
+			const decryptedUrlSegment = atob(clippedUrlSegment);
 			return `task_${decryptedUrlSegment}`;
+
+		case 'swapped every pair of characters':
+			const swappedUrlSegment = swapCharacters(clippedUrlSegment);
+			return `task_${swappedUrlSegment}`;
 
 		default:
 			return 'DEAD_END';
@@ -27,6 +47,8 @@ const goDownTheRabbitHole = async (urlSegment) => {
 	);
 
 	logCount(res.level);
+
+	console.log(res);
 
 	const updatedUrlSegment = updateUrlSegment(
 		res.encryption_method,
