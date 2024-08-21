@@ -3,6 +3,8 @@ export const dynamic = 'force-static';
 const BASE_URL = 'https://ciphersprint.pulley.com';
 const EMAIL = 'francoortegadev@gmail.com';
 
+const collectedData = [];
+
 const logCount = (level) => {
 	console.log(`Going down ${level + 1} times`);
 };
@@ -65,6 +67,71 @@ const decodeHex = (encodedString, keyHolder) => {
 	return decryptedMessage;
 };
 
+const decodeMessagePack = (encryptedString, keyHolder) => {
+	const base64String = findKey(keyHolder);
+
+	console.log({ base64String });
+
+	// Step 1: Base64 decode
+	function base64ToUint8Array(base64) {
+		const binaryString = atob(base64);
+		const len = binaryString.length;
+		const bytes = new Uint8Array(len);
+
+		for (let i = 0; i < len; i++) {
+			bytes[i] = binaryString.charCodeAt(i);
+		}
+
+		return bytes;
+	}
+
+	const binaryData = base64ToUint8Array(base64String);
+
+	// Step 2: MessagePack decode (simple implementation)
+	function decodeMessagePack(data) {
+		// Simple MessagePack decoding logic assuming the data is small and simple
+		// This example assumes the data is a sequence of integers (positions) in MessagePack format
+		const positions = [];
+		let i = 0;
+
+		while (i < data.length) {
+			let value = data[i++];
+			if (value < 0x80) {
+				// Single byte integer
+				positions.push(value);
+			} else if (value === 0xc2) {
+				// MessagePack format for 16-bit integers
+				value = (data[i] << 8) | data[i + 1];
+				positions.push(value);
+				i += 2;
+			}
+			// Handle other cases if needed
+		}
+
+		return positions;
+	}
+
+	const positions = decodeMessagePack(binaryData);
+
+	// Step 3: Reorder the characters
+	function reorderString(str, positions) {
+		const arr = Array.from(str);
+		const reordered = Array(arr.length);
+
+		for (let i = 0; i < positions.length; i++) {
+			reordered[positions[i]] = arr[i];
+		}
+
+		return reordered.join('');
+	}
+
+	const answer = reorderString(encryptedString, positions);
+
+	console.log({ answer });
+
+	return answer;
+};
+
 const updateUrlSegment = (encryptionMethod, encryptedUrlSegment) => {
 	const clippedUrlSegment = encryptedUrlSegment.slice(5);
 
@@ -112,6 +179,8 @@ const goDownTheRabbitHole = async (urlSegment) => {
 
 	console.log({ res });
 
+	collectedData.push(res);
+
 	const updatedUrlSegment = updateUrlSegment(
 		res.encryption_method,
 		res.encrypted_path
@@ -125,7 +194,28 @@ const goDownTheRabbitHole = async (urlSegment) => {
 };
 
 export async function GET() {
-	const data = await goDownTheRabbitHole(EMAIL);
+	// const data = await goDownTheRabbitHole(EMAIL);
+	// return Response.json({ data });
 
-	return Response.json({ data });
+	try {
+		const data = await goDownTheRabbitHole(EMAIL);
+		return Response.json({ data });
+	} catch (error) {
+		// console.error('Error fetching data:', error);
+		// console.log(collectedData);
+		// return new Response(JSON.stringify({ error: 'Failed to fetch data' }), {
+		// 	status: 500,
+		// 	headers: { 'Content-Type': 'application/json' },
+		// });
+		console.error('Error fetching data:', error);
+
+		// If there was any partial data collected, respond with that
+		return new Response(
+			JSON.stringify({
+				error: 'Failed to fetch all data',
+				partialData: collectedData,
+			}),
+			{ status: 500, headers: { 'Content-Type': 'application/json' } }
+		);
+	}
 }
